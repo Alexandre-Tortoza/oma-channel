@@ -79,6 +79,10 @@ Item {
   property bool configuredUnreadOnlyDefault: false
   property bool artworkEnabled: true
   property bool artworkAllowPageFetch: false
+  // When on: publish a system-tray icon (StatusNotifierItem, via a
+  // long-running `oma-channel tray` process) instead of always showing the
+  // bar icon. See trayProcess below.
+  property bool trayIconEnabled: false
 
   function configure(nextSettings) {
     var merged = nextSettings || {}
@@ -94,6 +98,7 @@ Item {
     root.configuredUnreadOnlyDefault = merged.unreadOnlyDefault === true
     root.artworkEnabled = merged.artworkEnabled !== false
     root.artworkAllowPageFetch = merged.artworkAllowPageFetch === true
+    root.trayIconEnabled = merged.trayIconEnabled === true
     var firstConfigure = !root.settingsReady
     root.settingsReady = true
     root.itemsUpdated()
@@ -129,7 +134,7 @@ Item {
     return normalized.length
   }
 
-  function saveConfig(subs, minutes, perFeed, perPage, defaultUnreadOnly, retention, artwork, artworkPageFetch) {
+  function saveConfig(subs, minutes, perFeed, perPage, defaultUnreadOnly, retention, artwork, artworkPageFetch, trayIcon) {
     var normalized = Model.normalizeSubscriptions(subs !== undefined ? subs : root.configuredSubscriptions)
     var feedList = []
     for (var i = 0; i < normalized.length; i++) {
@@ -146,7 +151,8 @@ Item {
       unreadOnlyDefault: defaultUnreadOnly === true,
       retentionDays: retDays,
       artworkEnabled: artwork !== false,
-      artworkAllowPageFetch: artworkPageFetch === true
+      artworkAllowPageFetch: artworkPageFetch === true,
+      trayIconEnabled: trayIcon === true
     })
     fetchFeed()
   }
@@ -386,6 +392,57 @@ Item {
     interval: 2000
     repeat: false
     onTriggered: root.runEnrichArtwork()
+  }
+
+  // ---- system tray icon ---------------------------------------------------
+  // A long-running `oma-channel tray` process publishes a StatusNotifierItem
+  // over D-Bus (see src/tray.rs) so the plugin can live in the system tray's
+  // hover drawer instead of the bar strip. Explicit start/stop rather than a
+  // plain `running: root.trayIconEnabled` binding, because the process can
+  // die on its own (e.g. no StatusNotifierWatcher running yet) and needs a
+  // bounded retry with backoff, not silent stay-dead.
+  property int _trayRestartAttempts: 0
+  readonly property int _trayMaxRestarts: 3
+
+  function startTrayProcess() {
+    if (!root.trayIconEnabled || trayProcess.running) return
+    trayProcess.command = root.binCommand(["tray"])
+    trayProcess.running = true
+  }
+
+  onTrayIconEnabledChanged: {
+    if (root.trayIconEnabled) {
+      root._trayRestartAttempts = 0
+      root.startTrayProcess()
+    } else {
+      trayRestartTimer.stop()
+      trayProcess.running = false
+    }
+  }
+
+  Process {
+    id: trayProcess
+    running: false
+    onExited: function(exitCode) {
+      if (!root.trayIconEnabled) {
+        root._trayRestartAttempts = 0
+        return
+      }
+      if (root._trayRestartAttempts >= root._trayMaxRestarts) {
+        console.warn("[OMA-CHANNEL] tray icon gave up after " + root._trayMaxRestarts
+          + " attempts (exit " + exitCode + ") -- is a system tray (StatusNotifierWatcher) running?")
+        return
+      }
+      root._trayRestartAttempts += 1
+      trayRestartTimer.interval = Math.min(30000, 2000 * Math.pow(2, root._trayRestartAttempts))
+      trayRestartTimer.start()
+    }
+  }
+
+  Timer {
+    id: trayRestartTimer
+    repeat: false
+    onTriggered: root.startTrayProcess()
   }
 
   // ---- cache maintenance IPC surface -------------------------------------

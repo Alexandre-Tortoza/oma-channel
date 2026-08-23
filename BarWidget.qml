@@ -79,6 +79,7 @@ BarWidget {
   readonly property bool configuredUnreadOnlyDefault: rssService ? rssService.configuredUnreadOnlyDefault === true : false
   readonly property bool configuredArtworkEnabled: rssService ? rssService.artworkEnabled !== false : true
   readonly property bool configuredArtworkAllowPageFetch: rssService ? rssService.artworkAllowPageFetch === true : false
+  readonly property bool configuredTrayIconEnabled: rssService ? rssService.trayIconEnabled === true : false
 
   function applyBarSection(section) {
     var next = Model.barSection(section)
@@ -104,7 +105,7 @@ BarWidget {
     if (!target || !rssService) return
     if ("bar" in target) target.bar = root.bar
     if ("settings" in target) target.settings = root.settings
-    if ("anchorItem" in target) target.anchorItem = button
+    if ("anchorItem" in target) target.anchorItem = buttonLoader.item
     if ("hostWidget" in target) target.hostWidget = root
     if ("emptyCopy" in target) target.emptyCopy = Model.emptyPanelCopy(root.configuredFeedUrls)
     if ("items" in target) target.items = rssService.items
@@ -187,8 +188,8 @@ BarWidget {
     if (panelLoader.item) panelLoader.item.closeForPopoutSwitch()
   }
 
-  implicitWidth: button.implicitWidth
-  implicitHeight: button.implicitHeight
+  implicitWidth: buttonLoader.item ? buttonLoader.item.implicitWidth : 0
+  implicitHeight: buttonLoader.item ? buttonLoader.item.implicitHeight : 0
 
   Connections {
     target: root.rssService
@@ -197,14 +198,36 @@ BarWidget {
 
   Component.onCompleted: pushSettingsToService()
 
-  BarIconButton {
-    id: button
+  // When the tray icon is enabled (Service.qml publishes a StatusNotifierItem
+  // and reacts to clicks itself), the bar-side affordance shrinks to a
+  // near-zero anchor: the ModuleSlot in the bar collapses widgets down to
+  // their implicitWidth, so a tiny nonzero size both frees the bar space and
+  // keeps Panel.qml's popup anchoring at a stable point (a fully invisible
+  // `visible:false` widget degrades to an arbitrary position between
+  // neighboring bar widgets instead).
+  Loader {
+    id: buttonLoader
     anchors.fill: parent
-    bar: root.bar
-    text: "󰑫"
-    tooltipText: root.badgeCount > 0 ? ("Oma Channel · " + root.badgeCount + " unread") : "Oma Channel"
-    onPressed: function(buttonCode) {
-      if (buttonCode === Qt.LeftButton) root.togglePanel()
+    sourceComponent: root.configuredTrayIconEnabled ? trayAnchorComponent : normalButtonComponent
+  }
+
+  Component {
+    id: normalButtonComponent
+    BarIconButton {
+      bar: root.bar
+      text: "󰑫"
+      tooltipText: root.badgeCount > 0 ? ("Oma Channel · " + root.badgeCount + " unread") : "Oma Channel"
+      onPressed: function(buttonCode) {
+        if (buttonCode === Qt.LeftButton) root.togglePanel()
+      }
+    }
+  }
+
+  Component {
+    id: trayAnchorComponent
+    Item {
+      implicitWidth: 2
+      implicitHeight: 2
     }
   }
 

@@ -6,7 +6,7 @@ use clap::{Parser, Subcommand};
 use oma_channel::model::{
     Article, BookmarkInput, FetchOutput, FetchStats, MarkInput, State, SubscriptionsPayload,
 };
-use oma_channel::{artwork, feed, model, opml_io, state};
+use oma_channel::{artwork, feed, model, opml_io, state, tray};
 
 #[derive(Parser)]
 #[command(
@@ -67,6 +67,9 @@ enum Command {
         #[arg(long)]
         network: bool,
     },
+    /// Publish a StatusNotifierItem tray icon and run until killed. Long-running;
+    /// meant to be managed as a persistent process by the QML service layer.
+    Tray,
     /// Parse an OPML file and print its feeds as subscriptions JSON.
     ImportOpml { path: std::path::PathBuf },
     /// Export subscriptions (JSON via --input or stdin) to an OPML 2.0 file.
@@ -107,6 +110,7 @@ fn run(cli: Cli) -> anyhow::Result<()> {
             allow_page_fetch,
             network,
         } => cmd_enrich_artwork(&state_path, budget, allow_page_fetch, network),
+        Command::Tray => tray::run(&state_path),
         Command::ImportOpml { path } => cmd_import_opml(&path),
         Command::ExportOpml { path, input } => cmd_export_opml(&path, input),
     }

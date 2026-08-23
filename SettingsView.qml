@@ -16,6 +16,7 @@ Item {
   property bool unreadOnlyDefault: false
   property bool artworkEnabled: true
   property bool artworkAllowPageFetch: false
+  property bool trayIconEnabled: false
   property string shareStatus: ""
   property color contentForeground: Color.foreground
   property string contentFontFamily: Style.font.family
@@ -36,7 +37,8 @@ Item {
         root.unreadOnlyDefault,
         root.retentionDays,
         root.artworkEnabled,
-        root.artworkAllowPageFetch
+        root.artworkAllowPageFetch,
+        root.trayIconEnabled
       )
     }
   }
@@ -861,6 +863,86 @@ Item {
                       cursorShape: root.artworkEnabled ? Qt.PointingHandCursor : Qt.ArrowCursor
                       onClicked: {
                         root.artworkAllowPageFetch = !root.artworkAllowPageFetch
+                        root.applySettings()
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        // 4. Group: TRAY
+        Column {
+          width: parent.width
+          spacing: Style.space(6)
+
+          Text {
+            text: "TRAY"
+            font.family: root.contentFontFamily
+            font.pixelSize: Style.font.caption
+            font.bold: true
+            color: Qt.rgba(root.contentForeground.r, root.contentForeground.g, root.contentForeground.b, 0.4)
+          }
+
+          Rectangle {
+            width: parent.width
+            height: trayCardCol.implicitHeight
+            radius: Style.space(6)
+            color: Qt.rgba(root.contentForeground.r, root.contentForeground.g, root.contentForeground.b, 0.03)
+            border.color: Qt.rgba(root.contentForeground.r, root.contentForeground.g, root.contentForeground.b, 0.08)
+            border.width: 1
+
+            Column {
+              id: trayCardCol
+              width: parent.width
+
+              // Show in system tray instead of the bar
+              Item {
+                width: parent.width
+                height: Style.space(46)
+
+                Row {
+                  anchors.fill: parent
+                  anchors.leftMargin: Style.space(14)
+                  anchors.rightMargin: Style.space(14)
+                  spacing: Style.space(8)
+
+                  Text {
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: parent.width - Style.space(60)
+                    text: "Show in system tray instead of the bar"
+                    wrapMode: Text.WordWrap
+                    font.family: root.contentFontFamily
+                    font.pixelSize: Style.font.body
+                    color: root.contentForeground
+                  }
+
+                  Rectangle {
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: Style.space(36)
+                    height: Style.space(20)
+                    radius: Style.space(10)
+                    color: root.trayIconEnabled
+                      ? Color.accent
+                      : Qt.rgba(root.contentForeground.r, root.contentForeground.g, root.contentForeground.b, 0.15)
+
+                    Rectangle {
+                      width: Style.space(16)
+                      height: Style.space(16)
+                      radius: width / 2
+                      anchors.verticalCenter: parent.verticalCenter
+                      x: root.trayIconEnabled ? parent.width - width - Style.space(2) : Style.space(2)
+                      color: Color.background
+                      Behavior on x { NumberAnimation { duration: 100 } }
+                    }
+
+                    MouseArea {
+                      anchors.fill: parent
+                      cursorShape: Qt.PointingHandCursor
+                      onClicked: {
+                        root.trayIconEnabled = !root.trayIconEnabled
                         root.applySettings()
                       }
                     }

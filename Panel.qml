@@ -27,6 +27,7 @@ import "Model.js" as Model
   property bool unreadOnlyDefault: false
   property bool artworkEnabled: true
   property bool artworkAllowPageFetch: false
+  property bool trayIconEnabled: false
   property string barSection: "right"
   property var lastImportResult: null
   property string shareStatus: ""
@@ -73,6 +74,7 @@ import "Model.js" as Model
       root.unreadOnlyDefault = root.hostWidget.configuredUnreadOnlyDefault
       root.artworkEnabled = root.hostWidget.configuredArtworkEnabled
       root.artworkAllowPageFetch = root.hostWidget.configuredArtworkAllowPageFetch
+      root.trayIconEnabled = root.hostWidget.configuredTrayIconEnabled
       root.barSection = root.hostWidget.configuredBarSection
       root.lastImportResult = null
       root.shareStatus = ""
@@ -246,6 +248,7 @@ import "Model.js" as Model
           unreadOnlyDefault: root.unreadOnlyDefault
           artworkEnabled: root.artworkEnabled
           artworkAllowPageFetch: root.artworkAllowPageFetch
+          trayIconEnabled: root.trayIconEnabled
           shareStatus: root.shareStatus
           contentForeground: root.contentForeground
           contentFontFamily: root.contentFontFamily

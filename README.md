@@ -6,7 +6,7 @@ Inspired by [sanjyay/rss-reeder](https://github.com/sanjyay/rss-reeder) (which i
 
 | Layer | Tech | Responsibility |
 |---|---|---|
-| `oma-channel` binary | Rust (`ureq`, `feed-rs`, `serde`, `infer`) | Parallel HTTPS fetching, RSS 2.0/Atom parsing, read/bookmark state, artwork download, retention pruning, OPML 2.0 |
+| `oma-channel` binary | Rust (`ureq`, `feed-rs`, `serde`, `infer`, `ksni`) | Parallel HTTPS fetching, RSS 2.0/Atom parsing, read/bookmark state, artwork download, retention pruning, OPML 2.0, system tray publishing |
 | `Service.qml` | Quickshell (Omarchy shell), singleton | Owns every backend request, the article cache, settings, and IPC — one instance regardless of monitor count |
 | `BarWidget.qml` / `Panel.qml` / `*.qml` | Quickshell (Omarchy shell), per-monitor | Bar badge, popup panel, search/filter UI, settings — a thin view over `Service.qml` |
 
@@ -24,6 +24,7 @@ The QML layer never parses XML — it spawns the Rust binary and renders its JSO
 - Per-feed item caps, retention pruning (1–3650 days), configurable polling
 - Vim-style keys: `j/k` navigate, `Enter` open, `m` toggle read, `b` bookmark, `r` refresh, `/` search, `c` categories
 - **Scriptable via IPC** — bind hotkeys to open the panel, refresh, mark all read, or jump straight to saved articles (see [Keybinding it](#keybinding-it))
+- **Optional system tray icon** — tuck the plugin away in the tray's hover drawer (like Steam/Discord) instead of always showing in the bar; left-click opens the panel, right-click gives a small menu
 - Persistent state in `$XDG_DATA_HOME/omarchy-oma-channel/state.json`; artwork cache in `$XDG_CACHE_HOME/omarchy-oma-channel/artwork/`
 
 ## Install
@@ -49,6 +50,7 @@ git pull && ./install.sh
 3. Or import your subscriptions: Settings → **Import OPML file**.
 4. Press `b` (or click the star) on an article to bookmark it — the **Saved** chip in the reader toolbar filters to those.
 5. Settings → **ARTWORK** to turn thumbnails on/off, and separately whether the reader may read an article's own page for a picture the feed didn't provide.
+6. Settings → **TRAY** → "Show in system tray instead of the bar" to move the icon into the tray's hover drawer. Needs a running StatusNotifierWatcher, which Omarchy's own tray widget already provides — if none is available the daemon retries a few times with backoff, then gives up quietly (check `journalctl`/the shell's own log for `[OMA-CHANNEL]` if the icon never shows up).
 
 ## Keybinding it
 
@@ -89,6 +91,7 @@ echo '{"subscriptions":[{"url":"https://blog.rust-lang.org/feed.xml"}]}' \
   | oma-channel fetch --max-per-feed 10 --retention-days 30
 oma-channel bookmark --input '{"ids":["<article-id>"],"bookmarked":true}'
 oma-channel enrich-artwork --budget 6 --network            # add --allow-page-fetch to also scrape OpenGraph images
+oma-channel tray                                            # long-running; publishes the tray icon and blocks
 oma-channel import-opml subs.opml
 ```
 
