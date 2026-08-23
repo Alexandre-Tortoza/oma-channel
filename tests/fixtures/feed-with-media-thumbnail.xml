@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:media="http://search.yahoo.com/mrss/">
+  <channel>
+    <title>Fotos & Fatos</title>
+    <link>https://fotos.example/</link>
+    <description>Um feed com thumbnails</description>
+    <item>
+      <title>Com thumbnail</title>
+      <link>https://fotos.example/posts/com-thumbnail</link>
+      <description>Tem uma miniatura declarada.</description>
+      <pubDate>Tue, 18 Aug 2026 10:00:00 GMT</pubDate>
+      <media:thumbnail url="https://fotos.example/img/thumb.jpg" width="150" height="150"/>
+    </item>
+  </channel>
+</rss>

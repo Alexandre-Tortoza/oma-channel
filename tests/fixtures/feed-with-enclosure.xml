@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>Postais</title>
+    <link>https://postais.example/</link>
+    <description>Um feed com enclosure de imagem</description>
+    <item>
+      <title>Com enclosure</title>
+      <link>https://postais.example/posts/com-enclosure</link>
+      <description>Tem um anexo de imagem.</description>
+      <pubDate>Tue, 18 Aug 2026 10:00:00 GMT</pubDate>
+      <enclosure url="https://postais.example/img/cover.png" length="12345" type="image/png"/>
+    </item>
+    <item>
+      <title>Sem imagem</title>
+      <link>https://postais.example/posts/sem-imagem</link>
+      <description>Sem qualquer artwork.</description>
+      <pubDate>Wed, 19 Aug 2026 09:30:00 GMT</pubDate>
+    </item>
+  </channel>
+</rss>

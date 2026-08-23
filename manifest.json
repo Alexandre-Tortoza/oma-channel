@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "id": "io.github.alexmrtr.oma-channel",
+  "name": "Oma Channel",
+  "version": "0.1.0",
+  "author": "alexmrtr",
+  "license": "MIT",
+  "description": "Native RSS and Atom reader for the Omarchy bar with a Rust backend: OPML, categories, search, unread tracking, permanent bookmarks, article artwork, and configurable retention.",
+  "kinds": ["service", "bar-widget"],
+  "entryPoints": {
+    "service": "Service.qml",
+    "barWidget": "BarWidget.qml"
+  },
+  "barWidget": {
+    "displayName": "Oma Channel",
+    "category": "Productivity",
+    "allowMultiple": false,
+    "defaultSection": "right"
+  }
+}

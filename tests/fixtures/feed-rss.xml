@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>Blog Solto</title>
+    <link>https://blogsolto.example/</link>
+    <description>Um blog sobre coisas</description>
+    <item>
+      <title>Primeiro post &amp; novidades</title>
+      <link>https://blogsolto.example/posts/primeiro</link>
+      <description><![CDATA[<p>Ol&aacute; <b>mundo</b>, este &eacute; o primeiro post.</p>]]></description>
+      <pubDate>Tue, 18 Aug 2026 10:00:00 GMT</pubDate>
+    </item>
+    <item>
+      <title>Segundo post</title>
+      <link>https://blogsolto.example/posts/segundo</link>
+      <description>Sobre RSS e Rust.</description>
+      <pubDate>Wed, 19 Aug 2026 09:30:00 GMT</pubDate>
+    </item>
+  </channel>
+</rss>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opml version="2.0">
+  <head>
+    <title>Minhas assinaturas</title>
+  </head>
+  <body>
+    <outline type="rss" text="Blog Solto" title="Blog Solto" xmlUrl="https://blogsolto.example/feed.xml" htmlUrl="https://blogsolto.example/"/>
+    <outline text="Tecnologia">
+      <outline type="rss" text="Rust Blog" title="Rust Blog" xmlUrl="https://blog.rust-lang.org/feed.xml"/>
+      <outline type="rss" text="Hacker News" xmlUrl="https://hnrss.org/frontpage"/>
+    </outline>
+    <outline type="rss" text="Inseguro" xmlUrl="http://inseguro.example/feed"/>
+  </body>
+</opml>

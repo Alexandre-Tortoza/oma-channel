@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>Rust Blog</title>
+  <link href="https://blog.rust-lang.org/"/>
+  <updated>2026-08-20T12:00:00Z</updated>
+  <id>urn:uuid:60a76c80-d399-11d9-b93C-0003935e8af0</id>
+  <entry>
+    <title>Announcing Rust 1.97</title>
+    <link href="https://blog.rust-lang.org/2026/08/20/Rust-1.97.0/"/>
+    <id>tag:blog.rust-lang.org,2026:1.97</id>
+    <updated>2026-08-20T12:00:00Z</updated>
+    <summary>A new release of Rust is available.</summary>
+  </entry>
+  <entry>
+    <title>Empowering everyone</title>
+    <link href="https://blog.rust-lang.org/2026/08/15/generic-post/"/>
+    <id>tag:blog.rust-lang.org,2026:generic</id>
+    <updated>2026-08-15T08:00:00Z</updated>
+    <content type="html">&lt;p&gt;Post &amp;amp; content&lt;/p&gt;</content>
+  </entry>
+</feed>
