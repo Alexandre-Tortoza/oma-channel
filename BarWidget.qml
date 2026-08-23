@@ -152,8 +152,8 @@ BarWidget {
 
   function updateSubscriptions(subs) { return rssService ? rssService.updateSubscriptions(subs) : 0 }
 
-  function saveConfig(subs, minutes, perFeed, perPage, section, defaultUnreadOnly, retention, artwork, artworkPageFetch) {
-    if (rssService) rssService.saveConfig(subs, minutes, perFeed, perPage, defaultUnreadOnly, retention, artwork, artworkPageFetch)
+  function saveConfig(subs, minutes, perFeed, perPage, section, defaultUnreadOnly, retention, artwork, artworkPageFetch, trayIcon) {
+    if (rssService) rssService.saveConfig(subs, minutes, perFeed, perPage, defaultUnreadOnly, retention, artwork, artworkPageFetch, trayIcon)
     applyBarSection(section)
   }
 
