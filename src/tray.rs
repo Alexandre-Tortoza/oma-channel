@@ -84,13 +84,15 @@ fn run_ipc(args: &[&str]) {
     }
 }
 
-/// A small solid-color circle, generated at runtime rather than shipped as an
-/// asset -- avoids an image-decoding dependency for one 32x32 dot. ARGB32,
-/// network byte order (big-endian: A, R, G, B per pixel), per ksni::Icon's
-/// documented format.
+/// A compact RSS mark, generated at runtime rather than shipped as an asset.
+/// The orange disc keeps the plugin's accent while the white dot and arcs make
+/// it legible among other tray icons. ARGB32 uses network byte order
+/// (big-endian: A, R, G, B per pixel), per ksni::Icon's documented format.
 fn icon() -> Icon {
     const SIZE: i32 = 32;
     const RADIUS: f32 = SIZE as f32 * 0.42;
+    const RSS_X: f32 = 9.0;
+    const RSS_Y: f32 = 23.0;
     let center = (SIZE as f32 - 1.0) / 2.0;
     let mut data = vec![0u8; (SIZE * SIZE * 4) as usize];
     for y in 0..SIZE {
@@ -103,6 +105,20 @@ fn icon() -> Icon {
                 data[idx + 1] = 255; // R
                 data[idx + 2] = 160; // G
                 data[idx + 3] = 0; // B -- solid feed-orange
+
+                let rss_dx = x as f32 - RSS_X;
+                let rss_dy = y as f32 - RSS_Y;
+                let distance = (rss_dx * rss_dx + rss_dy * rss_dy).sqrt();
+                let is_dot = distance <= 2.4;
+                let is_arc = rss_dx >= 0.0
+                    && rss_dy <= 0.0
+                    && ((distance >= 7.0 && distance <= 9.8)
+                        || (distance >= 13.0 && distance <= 15.8));
+                if is_dot || is_arc {
+                    data[idx + 1] = 255;
+                    data[idx + 2] = 255;
+                    data[idx + 3] = 255;
+                }
             }
         }
     }
@@ -154,14 +170,16 @@ mod tests {
     }
 
     #[test]
-    fn icon_center_is_opaque_and_corner_is_transparent() {
+    fn icon_contains_rss_mark_on_orange_disc() {
         let img = icon();
         let px = |x: i32, y: i32| {
             let idx = ((y * img.width + x) * 4) as usize;
             (img.data[idx], img.data[idx + 1], img.data[idx + 2], img.data[idx + 3])
         };
-        let (a, r, g, b) = px(16, 16);
+        let (a, r, g, b) = px(9, 23);
         assert_eq!(a, 255);
+        assert_eq!((r, g, b), (255, 255, 255));
+        let (_, r, g, b) = px(16, 16);
         assert_eq!((r, g, b), (255, 160, 0));
         let (corner_a, _, _, _) = px(0, 0);
         assert_eq!(corner_a, 0);
